@@ -15,3 +15,17 @@ The current implementation is as barebones as it gets. This is a proof of concep
 - [ ] Head to Head comparison tool
 - [ ] All data points are actually relevant
 - [ ] Glicko2 algorithm
+
+# How to use this repository
+
+Just clone the repo to your local computer and VSCode. Tag me on Discord if you want repository collaboration access.
+
+## Terminal commands:
+- Run web development environment
+    - pnpm run dev
+- Run as Tauri desktop App dev environment
+    - pnpm run tauri dev
+- Build production ready webpage
+    - pnpm run build
+- Build production ready desktop app
+    - pnpm run tauri build
