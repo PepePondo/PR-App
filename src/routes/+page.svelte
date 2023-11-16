@@ -13,9 +13,11 @@
 		Button,
 		Modal,
 		Label,
-		Input
+		Input,
+		ButtonGroup
 	} from 'flowbite-svelte';
-	import { PlusSolid } from 'flowbite-svelte-icons';
+	import { PlusSolid, ChevronLeftOutline, ChevronRightOutline } from 'flowbite-svelte-icons';
+	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	// extra CSS
@@ -27,24 +29,104 @@
 	let classInput =
 		'text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2  pl-10';
 
-	// search box & placeholder player data
-	let searchTerm = '';
+	// Players placeholder data
 	let players = [
 		{ id: 1, name: 'Player 1', alias: 'Camjkz', rating: 2000, rd: 350, vol: 0.06 },
 		{ id: 2, name: 'Player 2', alias: 'Hector', rating: 1500, rd: 320, vol: 0.06 },
 		{ id: 3, name: 'Player 3', alias: 'Sikey', rating: 1800, rd: 130, vol: 0.06 },
-		{ id: 4, name: 'Player 4', alias: 'Zebraboi', rating: 1900, rd: 200, vol: 0.06 }
+		{ id: 4, name: 'Player 4', alias: 'Zebraboi', rating: 1900, rd: 210, vol: 0.06 },
+		{ id: 5, name: 'Player 5', alias: 'BlacknotWhite', rating: 1230, rd: 400, vol: 0.06 },
+		{ id: 6, name: 'Player 6', alias: 'ZXgei', rating: 1760, rd: 500, vol: 0.06 },
+		{ id: 7, name: 'Player 7', alias: '4Germany', rating: 1100, rd: 100, vol: 0.06 },
+		{ id: 8, name: 'Player 8', alias: 'Cousin', rating: 800, rd: 90, vol: 0.06 },
+		{ id: 9, name: 'Player 9', alias: 'PepePondo', rating: 1100, rd: 100, vol: 0.06 },
+		{ id: 10, name: 'Player 10', alias: 'urMum', rating: 1200, rd: 200, vol: 0.06 },
+		{ id: 11, name: 'Player 11', alias: 'Armada', rating: 2200, rd: 230, vol: 0.06 },
+		{ id: 12, name: 'Player 12', alias: 'Tights2901', rating: 1700, rd: 250, vol: 0.06 },
+		{ id: 13, name: 'Player 13', alias: 'Bbas', rating: 1210, rd: 230, vol: 0.06 },
+		{ id: 14, name: 'Player 14', alias: 'Leeryo', rating: 1900, rd: 340, vol: 0.06 },
+		{ id: 15, name: 'Player 15', alias: 'mummy', rating: 1700, rd: 250, vol: 0.06 },
+		{ id: 16, name: 'Player 16', alias: 'AllIWantIsCode', rating: 1210, rd: 230, vol: 0.06 },
+		{ id: 17, name: 'Player 17', alias: 'Eeeshsdfs', rating: 1900, rd: 340, vol: 0.06 }
 	];
+
+	// variables
+	let wasClicked = false;
+	let searchTerm = '';
+	let currentPosition = 0;
+	const itemsPerPage = 7;
+	const showPage = 1;
+	let totalPages = 0;
+	/**
+	 * @type {any[]}
+	 */
+	let pagesToShow = [];
+	let totalItems = players.length;
+	/**
+	 * @type {number}
+	 */
+	let startPage;
+	/**
+	 * @type {number}
+	 */
+	let endPage;
+	// sorting variables
+	const sortKey = writable('id'); // default sort key
+	const sortDirection = writable(1); // default sort direction (ascending)
+	const sortItems = writable(players.slice()); // make a copy of the players array
+
+	// Pagination functions
+	const updateDataAndPagination = () => {
+		const currentPageItems = players.slice(currentPosition, currentPosition + itemsPerPage);
+		renderPagination(currentPageItems.length);
+	};
+
+	const loadNextPage = () => {
+		if (currentPosition + itemsPerPage < players.length) {
+			currentPosition += itemsPerPage;
+			updateDataAndPagination();
+		}
+	};
+
+	const loadPreviousPage = () => {
+		if (currentPosition - itemsPerPage >= 0) {
+			currentPosition -= itemsPerPage;
+			updateDataAndPagination();
+		}
+	};
+
+	const renderPagination = (/** @type {number} */ totalItems) => {
+		totalPages = Math.ceil(players.length / itemsPerPage);
+		const currentPage = Math.ceil((currentPosition + 1) / itemsPerPage);
+
+		startPage = currentPage - Math.floor(showPage / 2);
+		startPage = Math.max(1, startPage);
+		endPage = Math.min(startPage + showPage - 1, totalPages);
+
+		pagesToShow = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+	};
+
+	const goToPage = (/** @type {number} */ pageNumber) => {
+		currentPosition = (pageNumber - 1) * itemsPerPage;
+		updateDataAndPagination();
+	};
+
+	// Pagination svelte variables
+	$: startRange = currentPosition + 1;
+	$: endRange = Math.min(currentPosition + itemsPerPage, totalItems);
+
+	onMount(() => {
+		// Call renderPagination function when the component is mounted
+		renderPagination(players.length);
+	});
+
+	$: currentPageItems = players.slice(currentPosition, currentPosition + itemsPerPage);
+
 	$: filteredItems = players.filter(
 		(player) =>
 			player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			player.alias.toLowerCase().includes(searchTerm.toLowerCase())
 	);
-
-	// sorting variables
-	const sortKey = writable('id'); // default sort key
-	const sortDirection = writable(1); // default sort direction (ascending)
-	const sortItems = writable(players.slice()); // make a copy of the players array
 
 	// Define a function to sort the players
 	const sortTable = (/** @type {any} */ key) => {
@@ -105,11 +187,9 @@
 			slot="header"
 			class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0"
 		>
-			<Button>
-				<PlusSolid class="h-3.5 w-3.5 mr-2" /><a
-					href="javascript:void(0);"
-					on:click={() => (defaultModal = true)}>Add player</a
-				>
+			<Button on:click={() => (defaultModal = true)}>
+				<PlusSolid class="h-3.5 w-3.5 mr-2" />
+				Add player
 			</Button>
 		</div>
 		<TableHead>
@@ -131,20 +211,59 @@
 			>
 		</TableHead>
 		<TableBody tableBodyClass="divide-y">
-			{#each filteredItems as item}
-				<TableBodyRow>
-					<TableHeadCell class="!p-4">
-						<Checkbox />
-					</TableHeadCell>
-					<TableBodyCell>{item.id}</TableBodyCell>
-					<TableBodyCell>{item.rating}</TableBodyCell>
-					<TableBodyCell>{item.name}</TableBodyCell>
-					<TableBodyCell>{item.alias}</TableBodyCell>
-					<TableBodyCell>{item.rd}</TableBodyCell>
-					<TableBodyCell>{item.vol}</TableBodyCell>
-				</TableBodyRow>
-			{/each}
+			{#if searchTerm !== ''}
+				{#each filteredItems as item (item.id)}
+					<TableBodyRow>
+						<TableHeadCell class="!p-4">
+							<Checkbox />
+						</TableHeadCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.id}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.name}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.alias}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.rd}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.vol}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.rating}</TableBodyCell>
+					</TableBodyRow>
+				{/each}
+			{:else}
+				{#each currentPageItems as item (item.id)}
+					<TableBodyRow>
+						<TableHeadCell class="!p-4">
+							<Checkbox />
+						</TableHeadCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.id}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.rating}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.name}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.alias}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.rd}</TableBodyCell>
+						<TableBodyCell tdClass="px-6 py-3">{item.vol}</TableBodyCell>
+					</TableBodyRow>
+				{/each}
+			{/if}
 		</TableBody>
+		<div
+			slot="footer"
+			class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
+			aria-label="Table navigation"
+		>
+			<span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+				Showing
+				<span class="font-semibold text-gray-900 dark:text-white">{startRange}-{endRange}</span>
+				of
+				<span class="font-semibold text-gray-900 dark:text-white">{totalItems}</span>
+			</span>
+			<ButtonGroup>
+				<Button on:click={loadPreviousPage} disabled={currentPosition === 0}
+					><ChevronLeftOutline size="xs" class="m-1.5" /></Button
+				>
+				{#each pagesToShow as pageNumber}
+					<Button on:click={() => goToPage(pageNumber)}>{pageNumber}</Button>
+				{/each}
+				<Button on:click={loadNextPage} disabled={totalPages === endPage}
+					><ChevronRightOutline size="xs" class="m-1.5" /></Button
+				>
+			</ButtonGroup>
+		</div>
 	</TableSearch>
 </div>
 

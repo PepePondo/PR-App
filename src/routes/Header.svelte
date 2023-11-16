@@ -14,7 +14,6 @@
 		<NavUl class="flex align-middle">
 			<NavLi href="/">Rankings</NavLi>
 			<NavLi href="/compare">Compare</NavLi>
-			<NavLi href="javascript:void(0);">Add New</NavLi>
 		</NavUl>
 	</NavContainer>
 </Navbar>
