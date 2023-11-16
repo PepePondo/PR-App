@@ -1,4 +1,5 @@
 <script>
+	// imports
 	import {
 		// @ts-ignore
 		Table,
@@ -10,13 +11,14 @@
 		TableHeadCell,
 		TableSearch,
 		Button,
-		Dropdown,
-		DropdownItem
+		Modal,
+		Label,
+		Input
 	} from 'flowbite-svelte';
-	import { ChevronDownSolid, FilterSolid, PlusSolid } from 'flowbite-svelte-icons';
-	import { Section } from 'flowbite-svelte-blocks';
+	import { PlusSolid } from 'flowbite-svelte-icons';
 	import { writable } from 'svelte/store';
 
+	// extra CSS
 	let divClass = 'bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden';
 	let innerDivClass =
 		'flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4';
@@ -25,6 +27,7 @@
 	let classInput =
 		'text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2  pl-10';
 
+	// search box & placeholder player data
 	let searchTerm = '';
 	let players = [
 		{ id: 1, name: 'Player 1', alias: 'Camjkz', rating: 2000, rd: 350, vol: 0.06 },
@@ -72,8 +75,19 @@
 		});
 		sortItems.set(sorted);
 	}
+
+	// Add player modal
+	let defaultModal = false;
+	const handleSubmit = () => {
+		alert('Form submited.');
+	};
+	/**
+	 * @type {any}
+	 */
+	let selected;
 </script>
 
+<!-- Player Table -->
 <div class="container mx-auto px-1 py-4">
 	<TableSearch
 		placeholder="Search by player name or alias"
@@ -92,32 +106,11 @@
 			class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0"
 		>
 			<Button>
-				<PlusSolid class="h-3.5 w-3.5 mr-2" />Add product
+				<PlusSolid class="h-3.5 w-3.5 mr-2" /><a
+					href="javascript:void(0);"
+					on:click={() => (defaultModal = true)}>Add player</a
+				>
 			</Button>
-			<Button color="alternative">Actions<ChevronDownSolid class="w-3 h-3 ml-2 " /></Button>
-			<Dropdown class="w-44 divide-y divide-gray-100">
-				<DropdownItem>Mass Edit</DropdownItem>
-				<DropdownItem>Delete all</DropdownItem>
-			</Dropdown>
-			<Button color="alternative">Filter<FilterSolid class="w-3 h-3 ml-2 " /></Button>
-			<Dropdown class="w-48 p-3 space-y-2 text-sm">
-				<h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Choose brand</h6>
-				<li>
-					<Checkbox>Apple (56)</Checkbox>
-				</li>
-				<li>
-					<Checkbox>Microsoft (16)</Checkbox>
-				</li>
-				<li>
-					<Checkbox>Razor (49)</Checkbox>
-				</li>
-				<li>
-					<Checkbox>Nikon (12)</Checkbox>
-				</li>
-				<li>
-					<Checkbox>BenQ (74)</Checkbox>
-				</li>
-			</Dropdown>
 		</div>
 		<TableHead>
 			<TableHeadCell class="!p-4 bg-white">
@@ -154,3 +147,39 @@
 		</TableBody>
 	</TableSearch>
 </div>
+
+<!-- Comparison Modal -->
+<Modal title="Add Product" bind:open={defaultModal} autoclose class="min-w-full">
+	<form on:submit={handleSubmit}>
+		<div class="grid gap-4 mb-4 sm:grid-cols-2">
+			<div>
+				<Label for="name" class="mb-2">Name</Label>
+				<Input type="text" id="name" placeholder="Type participant name" required />
+			</div>
+			<div>
+				<Label for="alias" class="mb-2">Alias</Label>
+				<Input type="text" id="alias" placeholder="Type participant alias" required />
+			</div>
+			<div>
+				<Label for="rating">Predicted Rating (optional)</Label>
+				<span class="text-xs italic font-thin">Rating should be between 800 to 2000 to start.</span>
+				<Input type="text" id="rating" class="mt-1" placeholder="Default rating is 1500" />
+			</div>
+			<div />
+			<Button type="submit" class="w-52">
+				<svg
+					class="mr-1 -ml-1 w-6 h-6"
+					fill="currentColor"
+					viewBox="0 0 20 20"
+					xmlns="http://www.w3.org/2000/svg"
+					><path
+						fill-rule="evenodd"
+						d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+						clip-rule="evenodd"
+					/></svg
+				>
+				Add new player
+			</Button>
+		</div>
+	</form>
+</Modal>
