@@ -20,6 +20,7 @@
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { createEventDispatcher } from 'svelte';
+	import { Client } from 'pg';
 
 	// extra CSS
 	let divClass = 'bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden';
@@ -191,24 +192,31 @@
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		// Send the form data to the server using fetch or your preferred method
-		const response = await fetch('/api/add-player', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(formData)
+		const client = new Client({
+			connectionString:
+				'postgresql://offstage:pKWyZwxfPn3C5gsnK7aSGg@shield-onager-7202.8nk.cockroachlabs.cloud:26257/PRranking?sslmode=verify-full',
+
+			application_name: '$ PRranking'
 		});
 
-		if (response.ok) {
-			// If the server successfully processes the request, close the modal and update the table
+		// Send the form data to the server using fetch or your preferred method
+
+		try {
+			await client.connect();
+			console.log('connected');
+			let result = await client.query(
+				`INSERT INTO players (name, alias, rating, rd, vol) VALUES ($1, $2, $3, $4, $5)`,
+				[formData.name, formData.alias, formData.rating, formData.rd, formData.vol]
+			);
+
 			defaultModal = false;
-			resetForm();
 			dispatch('updateTable'); // Trigger an event to notify the parent component to update the table
 			alert('Form submited.');
-		} else {
-			// Handle errors if needed
-			console.error('Error adding player');
+			resetForm();
+		} catch (/**
+		 * @type {any}
+		 */ error) {
+			console.error('connection error', error.stack);
 		}
 	};
 </script>
