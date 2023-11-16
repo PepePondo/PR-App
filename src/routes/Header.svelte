@@ -1,5 +1,5 @@
 <script>
-	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger } from 'flowbite-svelte';
+	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, DarkMode } from 'flowbite-svelte';
 	import saltLogo from '../assets/images/icons/SaltLogo.svg';
 	import { Label, Input, Button, Modal, Textarea, Select } from 'flowbite-svelte';
 	let defaultModal = false;
@@ -18,13 +18,13 @@
 </script>
 
 <!-- Header  -->
-<Navbar let:NavContainer color="primary">
+<Navbar let:NavContainer color="primary" class="py-6">
 	<NavContainer class="border px-5 py-2 rounded-lg bg-white dark:bg-gray-600">
 		<NavBrand href="/">
-			<img src={saltLogo} class="h-24 sm:h-24" alt="Salt Logo" />
+			<img src={saltLogo} alt="Salt Logo" class="w-24 h-24 dark:white-logo" />
 		</NavBrand>
 		<NavHamburger />
-		<NavUl>
+		<NavUl class="flex align-middle">
 			<NavLi href="/">Rankings</NavLi>
 			<NavLi href="/compare">Compare</NavLi>
 			<NavLi on:click={() => (defaultModal = true)} href="javascript:void(0);">Add New</NavLi>
@@ -38,32 +38,18 @@
 		<div class="grid gap-4 mb-4 sm:grid-cols-2">
 			<div>
 				<Label for="name" class="mb-2">Name</Label>
-				<Input type="text" id="name" placeholder="Type participant Name" required />
+				<Input type="text" id="name" placeholder="Type participant name" required />
 			</div>
 			<div>
-				<Label for="brand" class="mb-2">Brand</Label>
-				<Input type="text" id="brand" placeholder="Product brand" required />
+				<Label for="alias" class="mb-2">Alias</Label>
+				<Input type="text" id="alias" placeholder="Type participant alias" required />
 			</div>
 			<div>
-				<Label for="price" class="mb-2">Price</Label>
-				<Input type="text" id="price" placeholder="$29999" required />
+				<Label for="rating">Predicted Rating (optional)</Label>
+				<span class="text-xs italic font-thin">Rating should be between 800 to 2000 to start.</span>
+				<Input type="text" id="rating" class="mt-1" placeholder="Default rating is 1500" />
 			</div>
-			<div>
-				<Label
-					>Category
-					<Select class="mt-2" items={countries} bind:value={selected} required />
-				</Label>
-			</div>
-			<div class="sm:col-span-2">
-				<Label for="description" class="mb-2">Description</Label>
-				<Textarea
-					id="description"
-					placeholder="Your description here"
-					rows="4"
-					name="description"
-					required
-				/>
-			</div>
+			<div />
 			<Button type="submit" class="w-52">
 				<svg
 					class="mr-1 -ml-1 w-6 h-6"
@@ -76,7 +62,7 @@
 						clip-rule="evenodd"
 					/></svg
 				>
-				Add new product
+				Add new player
 			</Button>
 		</div>
 	</form>

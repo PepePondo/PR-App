@@ -6,3 +6,9 @@
 <Header />
 
 <slot />
+
+<style>
+	:global(body) {
+		background-color: #f0fdf4;
+	}
+</style>
