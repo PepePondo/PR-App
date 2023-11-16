@@ -19,6 +19,7 @@
 	import { PlusSolid, ChevronLeftOutline, ChevronRightOutline } from 'flowbite-svelte-icons';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { createEventDispatcher } from 'svelte';
 
 	// extra CSS
 	let divClass = 'bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden';
@@ -51,7 +52,7 @@
 	];
 
 	// variables
-	let wasClicked = false;
+	const dispatch = createEventDispatcher();
 	let searchTerm = '';
 	let currentPosition = 0;
 	const itemsPerPage = 7;
@@ -160,13 +161,56 @@
 
 	// Add player modal
 	let defaultModal = false;
-	const handleSubmit = () => {
-		alert('Form submited.');
-	};
+
 	/**
 	 * @type {any}
 	 */
 	let selected;
+
+	// Form Data
+	let formData = {
+		name: '',
+		alias: '',
+		rating: 1500, // default rating is 1500
+		rd: 200,
+		vol: 0.06
+	};
+
+	// Function to reset the form data
+	const resetForm = () => {
+		formData = {
+			name: '',
+			alias: '',
+			rating: 1500, // default rating is 1500
+			rd: 200,
+			vol: 0.06
+		};
+	};
+
+	// Function to handle form submission
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+
+		// Send the form data to the server using fetch or your preferred method
+		const response = await fetch('/api/add-player', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(formData)
+		});
+
+		if (response.ok) {
+			// If the server successfully processes the request, close the modal and update the table
+			defaultModal = false;
+			resetForm();
+			dispatch('updateTable'); // Trigger an event to notify the parent component to update the table
+			alert('Form submited.');
+		} else {
+			// Handle errors if needed
+			console.error('Error adding player');
+		}
+	};
 </script>
 
 <!-- Player Table -->
@@ -273,16 +317,34 @@
 		<div class="grid gap-4 mb-4 sm:grid-cols-2">
 			<div>
 				<Label for="name" class="mb-2">Name</Label>
-				<Input type="text" id="name" placeholder="Type participant name" required />
+				<Input
+					type="text"
+					id="name"
+					placeholder="Type participant name"
+					required
+					bind:value={formData.name}
+				/>
 			</div>
 			<div>
 				<Label for="alias" class="mb-2">Alias</Label>
-				<Input type="text" id="alias" placeholder="Type participant alias" required />
+				<Input
+					type="text"
+					id="alias"
+					placeholder="Type participant alias"
+					bind:value={formData.alias}
+					required
+				/>
 			</div>
 			<div>
 				<Label for="rating">Predicted Rating (optional)</Label>
 				<span class="text-xs italic font-thin">Rating should be between 800 to 2000 to start.</span>
-				<Input type="text" id="rating" class="mt-1" placeholder="Default rating is 1500" />
+				<Input
+					type="text"
+					id="rating"
+					class="mt-1"
+					placeholder="Default rating is 1500"
+					bind:value={formData.rating}
+				/>
 			</div>
 			<div />
 			<Button type="submit" class="w-52">

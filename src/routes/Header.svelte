@@ -1,7 +1,6 @@
 <script>
 	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, DarkMode } from 'flowbite-svelte';
 	import saltLogo from '../assets/images/icons/SaltLogo.svg';
-	import { Label, Input, Button, Modal, Textarea, Select } from 'flowbite-svelte';
 </script>
 
 <!-- Header  -->
@@ -13,7 +12,7 @@
 		<NavHamburger />
 		<NavUl class="flex align-middle">
 			<NavLi href="/">Rankings</NavLi>
-			<NavLi href="/compare">Compare</NavLi>
+			<NavLi href="/compare" class="disabled">Compare</NavLi>
 		</NavUl>
 	</NavContainer>
 </Navbar>
