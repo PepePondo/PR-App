@@ -62,22 +62,3 @@ This is a backend server for a list of players using Express and MongoDS
 5. [dotenv](https://www.npmjs.com/package/dotenv)
 6. [cors](https://www.npmjs.com/package/cors)
 7. [body-parser](https://www.npmjs.com/package/body-parser)
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
-
-## Contributing
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a pull request
-
-## Questions
-
-If you have any questions, please contact me at [
-](mailto:)
-
-You can find more of my work at [GitHub]()
